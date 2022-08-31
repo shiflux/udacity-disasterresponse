@@ -72,5 +72,6 @@ I tried to use both RandomForest and SVM for the classification.
         
             {TODO} 
 
+3. Many message types have very low samples (or none). We could consider removing them to improve the score of our model.
 # License
 You can use this in any way you want.
