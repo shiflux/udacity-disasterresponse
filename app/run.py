@@ -12,6 +12,8 @@ from plotly.graph_objs import Bar
 import joblib
 from sqlalchemy import create_engine
 
+import sys
+
 
 app = Flask(__name__)
 
@@ -26,6 +28,8 @@ def tokenize(text):
 
     return clean_tokens
 
+
+sys.path.append('../models')
 # load data
 engine = create_engine('sqlite:///../data/DisasterResponse.db')
 df = pd.read_sql_table('DisasterMessages', engine)

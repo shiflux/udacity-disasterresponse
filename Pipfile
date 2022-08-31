@@ -12,6 +12,7 @@ sklearn = "*"
 plotly = "*"
 flask = "*"
 joblib = "*"
+spacy = "*"
 
 [dev-packages]
 

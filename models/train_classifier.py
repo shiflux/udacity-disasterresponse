@@ -15,7 +15,7 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 
-from sklearn.pipeline import Pipeline
+from sklearn.pipeline import Pipeline, FeatureUnion
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.multioutput import MultiOutputClassifier
@@ -23,6 +23,8 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
 from sklearn.model_selection import GridSearchCV
+
+from doc_vectorizer import MeanVectorizer
 
 def load_data(database_filepath: str) -> tuple[pd.Series, pd.DataFrame, list]:
     '''load data from sqlite db, table "DisasterMessages"
@@ -44,33 +46,41 @@ def load_data(database_filepath: str) -> tuple[pd.Series, pd.DataFrame, list]:
 
 
 def tokenize(text):
+    detected_urls = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', text)
+    for url in detected_urls:
+        text = text.replace(url, "urlplaceholder")
+
+    tokens = word_tokenize(text)
     lemmatizer = WordNetLemmatizer()
-    
-    # remove punct
-    text = re.sub(r"[^a-zA-Z0-9]", " ", text)
-    tokens = [lemmatizer.lemmatize(word).lower().strip() for word in word_tokenize(text) if word not in stopwords]
-    
-    return tokens
+
+    clean_tokens = []
+    for tok in tokens:
+        clean_tok = lemmatizer.lemmatize(tok).lower().strip()
+        clean_tokens.append(clean_tok)
+
+    return clean_tokens
 
 
 def build_model():
-    # best random forest {'clf__estimator__min_samples_split': 4, 'clf__estimator__n_estimators': 200, 'vect__ngram_range': (1, 2)}
+    parameters = {
+        'features__text_pipeline__count_vect__ngram_range': ((1, 1), (1, 2)),
+        'clf__estimator__n_estimators': [10, 50, 100, 200],
+        'clf__estimator__min_samples_split': [2, 3, 4]
+    }
+    
     pipeline = Pipeline([
-        ('vect', CountVectorizer(ngram_range=(1, 2))),
-        ('tfidf', TfidfTransformer()),
-        ('clf', MultiOutputClassifier(RandomForestClassifier(min_samples_split=4,
-                                                             n_estimators= 200,
-                                                             )))
+        ('features', FeatureUnion([
+            ('text_pipeline', Pipeline([
+                 ('count_vect', CountVectorizer(tokenizer=tokenize)),
+                 ('tfidf', TfidfTransformer()),
+            ])),
+            ('mean_vect', MeanVectorizer(tokenizer=tokenize)),
+        ])),
+        ('clf', MultiOutputClassifier(RandomForestClassifier()))
     ])
     
-    # parameters = {
-    #     'vect__ngram_range': ((1, 1), (1, 2)),
-    #     'clf__estimator__n_estimators': [10, 50, 100, 200],
-    #     'clf__estimator__min_samples_split': [2, 3, 4]
-    # }
-    
-    # return GridSearchCV(pipeline, parameters, n_jobs=-1)
-    return pipeline
+    return GridSearchCV(pipeline, parameters, n_jobs=2)
+    #return pipeline
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
@@ -100,7 +110,7 @@ def main():
         
         print('Training model...')
         model.fit(X_train, Y_train)
-        #print(model.best_params_)
+        print(model.best_params_)
         
         print('Evaluating model...')
         evaluate_model(model, X_test, Y_test, category_names)
