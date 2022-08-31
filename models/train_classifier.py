@@ -44,10 +44,16 @@ def load_data(database_filepath: str) -> tuple[pd.Series, pd.DataFrame, list]:
     return X, Y, list(Y.columns)
 
 
-def tokenize(text):
-    detected_urls = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', text)
-    for url in detected_urls:
-        text = text.replace(url, "urlplaceholder")
+def tokenize(text: str) -> list:
+    '''Tokenizes a string of text
+
+    input:
+        text (str): input text
+
+    output:
+        List of tokens
+    '''
+    text = re.sub(r"[^a-zA-Z0-9]", " ", text)
 
     tokens = word_tokenize(text)
     lemmatizer = WordNetLemmatizer()
