@@ -71,17 +71,17 @@ def build_model():
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)),
         ('tfidf', TfidfTransformer()),
-        ('clf', MultiOutputClassifier(SVC()))
+        ('clf', MultiOutputClassifier(RandomForestClassifier()))
     ])
     
-    # parameters = {
-    #     'vect__ngram_range': ((1, 1), (1, 2)),
-    #     'clf__estimator__n_estimators': [10, 50, 100, 200],
-    #     'clf__estimator__min_samples_split': [2, 3, 4]
-    # }
-    parameters = {'clf__estimator__C': [0.1, 1, 10, 100, 1000], 
-              'clf__estimator__gamma': [1, 0.1, 0.01, 0.001, 0.0001],
-              'clf__estimator__kernel': ['rbf']} 
+    parameters = {
+        'vect__ngram_range': ((1, 1), (1, 2)),
+        'clf__estimator__n_estimators': [10, 50, 100, 200],
+        'clf__estimator__min_samples_split': [2, 3, 4]
+    }
+    # parameters = {'clf__estimator__C': [0.1, 1, 10, 100, 1000], 
+    #           'clf__estimator__gamma': [1, 0.1, 0.01, 0.001, 0.0001],
+    #           'clf__estimator__kernel': ['rbf']} 
     return GridSearchCV(pipeline, parameters, n_jobs=3, verbose = 3)
     #return pipeline
 
@@ -89,8 +89,8 @@ def build_model():
 def evaluate_model(model, X_test, Y_test, category_names):
     y_pred = model.predict(X_test)
     
-    #for index in range(0, len(category_names)):
-    #    print(category_names[index], classification_report(Y_test.values[index,:], y_pred[index,:]))
+    for index in range(0, len(category_names)):
+        print(category_names[index], classification_report(Y_test.values[index,:], y_pred[index,:]))
     
     print('total', classification_report(np.hstack(Y_test.values), np.hstack(y_pred)))
 
