@@ -35,14 +35,14 @@ pip install -r requirements.txt
 4. Click the `PREVIEW` button to open the homepage
 
 # File Description
-**.gitignore** Git ignore file
-**app/templates/** HTML templates used by flask for the web app
-**app/run.py**  Needed to start flask app
-**data/disaster_categories.csv** File containing categories data
-**data/disaster_messages.csv** File containing messages
-**data/Disaster.db** Database with processed data
-**data/process_data.py** Python script used for ETL
-**models/train_classifier.py** Python script used to train the model
+- **.gitignore** Git ignore file
+- **app/templates/** HTML templates used by flask for the web app
+- **app/run.py**  Needed to start flask app
+- **data/disaster_categories.csv** File containing categories data
+- **data/disaster_messages.csv** File containing messages
+- **data/Disaster.db** Database with processed data
+- **data/process_data.py** Python script used for ETL
+- **models/train_classifier.py** Python script used to train the model
 
 # Results
 1. RandomForest
