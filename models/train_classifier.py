@@ -67,7 +67,19 @@ def tokenize(text: str) -> list:
 
 
 def build_model():
-    # best random forest {'clf__estimator__min_samples_split': 4, 'clf__estimator__n_estimators': 200, 'vect__ngram_range': (1, 2)}
+    '''Build model
+    '''
+    pipeline = Pipeline([
+        ('vect', CountVectorizer(tokenizer=tokenize, ngram_range=(1, 2))),
+        ('tfidf', TfidfTransformer()),
+        ('clf', MultiOutputClassifier(RandomForestClassifier(min_samples_split=2, n_estimators=100)))
+    ])
+    return pipeline
+
+
+def build_model_best_params():
+    '''Find best params based on grid search
+    '''
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)),
         ('tfidf', TfidfTransformer()),
@@ -79,12 +91,8 @@ def build_model():
         'clf__estimator__n_estimators': [10, 50, 100, 200],
         'clf__estimator__min_samples_split': [2, 3, 4]
     }
-    # parameters = {'clf__estimator__C': [0.1, 1, 10, 100, 1000], 
-    #           'clf__estimator__gamma': [1, 0.1, 0.01, 0.001, 0.0001],
-    #           'clf__estimator__kernel': ['rbf']} 
-    return GridSearchCV(pipeline, parameters, n_jobs=3, verbose = 3)
-    #return pipeline
 
+    return GridSearchCV(pipeline, parameters, n_jobs=3, verbose = 3)
 
 def evaluate_model(model, X_test, Y_test, category_names):
     y_pred = model.predict(X_test)
@@ -109,11 +117,12 @@ def main():
         X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=42)
         
         print('Building model...')
+        #model = build_model_best_params()
         model = build_model()
         
         print('Training model...')
         model.fit(X_train, Y_train)
-        print(model.best_params_)
+        #print(model.best_params_)
         
         print('Evaluating model...')
         evaluate_model(model, X_test, Y_test, category_names)
