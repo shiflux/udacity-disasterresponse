@@ -350,6 +350,7 @@ pip install -r requirements.txt
     | wighed avg | 1.00 | 0.97 | 0.99 | 36 |
     
     </details>
-2. Many message types have very low samples (or none). We could consider removing them to improve the score of our model.
+2. Many message types have very low samples (or none). We could consider removing them or aggregating them with other features.
+3. We can consider to implement a vectorization of the complete text, and match it to the closest vec of the features to improve performance.
 # License
 You can use this in any way you want.
