@@ -52,6 +52,9 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     # drop the categories column for dataframe and concatenate new categories df
     df = pd.concat([df.drop('categories', axis=1), categories], axis=1)
 
+    # normalize all related values to 1
+    df['related'] = df['related'].astype('str').str.replace('2', '1')
+
     # remove duplicates
     df = df[~df.duplicated()]
 
