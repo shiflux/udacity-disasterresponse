@@ -4,8 +4,9 @@
 1. [Installation](README.md#installation)
 2. [Instructions](README.md#instructions)
 3. [File Description](README.md#file-description)
-4. [Results](README.md#results)
-5. [Licensing, Authors and Acknowledgements](README.md#licensing-authors-and-acknowledgements)
+4. [Project Motivation](README.md#project-motivation)
+5. [Results](README.md#results)
+6. [Licensing, Authors and Acknowledgements](README.md#licensing-authors-and-acknowledgements)
 
 
 # Installation
@@ -43,6 +44,10 @@ pip install -r requirements.txt
 - **data/Disaster.db** Database with processed data
 - **data/process_data.py** Python script used for ETL
 - **models/train_classifier.py** Python script used to train the model
+
+# Project Motivation
+This is a project for the Udacity "Data Scientist" nanodegree.
+We are using the data provided by Figure Eight (now [Appen](https://appen.com/)). The data contains direct and social media messages during a disaster response. Our purpose is to cathegorize these messages through a supervised model so that they can be forwarded to the organization caring the subject.
 
 # Results
 1. RandomForest
